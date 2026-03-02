@@ -146,6 +146,7 @@ if __name__ == "__main__":
     aircraft.e0    = 1.00  # Span efficiency for straight level flight
 
     # Wing bending and material properties
+    # CHANGE dbmax AS NECESSARY FOR DS.2
     aircraft.dbmax   = 0.06  # tip displacement bending constraint
     aircraft.rhofoam = 32.     # kg/m^3. high load foam
     aircraft.Efoam   = 19.3E6  # Pa.     high load foam
