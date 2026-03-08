@@ -4,4 +4,4 @@ Contributors:
 Asael Acosta,
 Ricardo Ochoa,
 Avaneesh Pal,
-Kue Phan (KP)
+Khue Phan (KP)
