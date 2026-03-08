@@ -164,34 +164,37 @@ if __name__ == "__main__":
     aircraft = UEFC()
 
     # Payload weight
-    aircraft.mpay_g   = np.nan     # payload weight in grams
+    aircraft.mpay_g   = 250    # payload weight in grams
 
     # Geometry parameters
     S  = np.nan                  # Wing area (m^2)
     AR = np.nan                  # Wing aspect ratio
-    aircraft.taper    = np.nan   # taper ratio
-    aircraft.dihedral = np.nan   # Wing dihedral (degrees)
-    aircraft.tau      = np.nan   # thickness-to-chord ratio
+    aircraft.taper    = 0.7  # taper ratio
+    aircraft.dihedral = 10   # Wing dihedral (degrees)
+    aircraft.tau      = 0.1   # thickness-to-chord ratio
 
     # Tail parameters
-    aircraft.Sh = np.nan # Wing area of horizontal tail (m^2)
-    aircraft.Sv = np.nan # Wing area of vertical tail (m^2)
+    aircraft.Sh = 0.04 # Wing area of horizontal tail (m^2)
+    aircraft.Sv = 0.03 # Wing area of vertical tail (m^2)
 
     # Fuselage parameters
-    aircraft.l_AR = np.nan  # Fuselage wingspan to length ratio (-)
+    aircraft.l_AR = 1.63  # Fuselage wingspan to length ratio (-)
 
     # Aerodynamic parameters
-    aircraft.CLdes    = np.nan    # maximum CL wing will be designed to fly at (in cruise)
-    aircraft.e0       = np.nan    # Span efficiency for straight level flight
+    aircraft.CLdes    = 0.75    # maximum CL wing will be designed to fly at (in cruise)
+    aircraft.e0       = 1  # Span efficiency for straight level flight
 
     # Wing bending and material properties
-    aircraft.dbmax    = np.nan  # tip displacement bending constraint
+    aircraft.dbmax    = 0.08  # tip displacement bending constraint
     aircraft.rhofoam  = 32.     # kg/m^3. high load foam
     aircraft.Efoam    = 19.3E6  # Pa.     high load foam
 
     num_division = 41
-    scan_ARS(aircraft, np.nan, np.nan, np.nan, np.nan, num_division, show_plots=True)
-
-
-
-
+    scan_ARS(
+    aircraft,
+    AR_start = 6,
+    AR_end   = 16,
+    S_start  = 0.15,
+    S_end    = 0.60,
+    num_division = num_division,
+    show_plots = True)
