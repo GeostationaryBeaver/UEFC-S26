@@ -14,7 +14,7 @@ S_h = UEFC().Sh
 # Plane Vanilla Constants from Page 10
 c_bar = 0.2 # Meters
 b = 1.77 # Meters
-C_LW_nom = 0.64
+C_LW_nom = 0.65
 C_MW_nom = -0.15
 c_bar_h = 0.0775 # Meters
 b_h = 0.525 # Meters
@@ -27,10 +27,10 @@ a_w = (2*np.pi) / (1 + 2/AR)  # Equation 15
 
 AR_h = b_h**2 / S_h           # From definition of AR (AR = b**2/S)
 
-a_h = 2*np.pi / (1 + 2/AR_h)              # Equation 20
-zeta_e = np.arccos(1 - 2*f_e)             # Equation 22
-a_e = 2*(np.pi - zeta_e + np.sin(zeta_e)) # Equation 21
-V_h = S_h*l_h/(S*c_bar)                       # Equation 25
+a_h = (2*np.pi) / (1 + 2/AR_h)  # Equation 20
+zeta_e = np.arccos(1 - 2*f_e)   # Equation 22
+a_e = 2*(np.pi - zeta_e + np.sin(zeta_e)) / (1 + 2/AR_h) # Equation 21
+V_h = (S_h*l_h) / (S*c_bar)         # Equation 25
 
 def get_alpha(alpha_e):
     alpha = -(V_h*(c_bar/l_h)*alpha_e) / ((a_w/a_e) + V_h*(c_bar/l_h)*(a_h/a_e))
@@ -46,11 +46,11 @@ plt.grid()
 # SM.5(c) Code - Ricardo Ochoa
 
 def get_C_LW(alpha_e):
-    C_LW = C_LW_nom + a_w*get_alpha(alpha_e)
+    C_LW = C_LW_nom + a_w*get_alpha(alpha_e) # Equation 14
     return C_LW
 
 def get_C_LH(alpha_e):
-    C_LH = a_h*get_alpha(alpha_e) + a_e*alpha_e
+    C_LH = a_h*get_alpha(alpha_e) + a_e*alpha_e # Equation 19
     return C_LH
 
 plt.figure(2)
@@ -70,7 +70,7 @@ plt.grid()
 C_MW = C_MW_nom # Equation 17
 
 def get_x_cg_over_c_bar(alpha_e):
-    x_cg_over_c_bar = (1/4 - C_MW/get_C_LW(alpha_e))
+    x_cg_over_c_bar = 1/4 - C_MW/get_C_LW(alpha_e) # SM.5(a) Result
     return x_cg_over_c_bar
 
 plt.figure(3)
