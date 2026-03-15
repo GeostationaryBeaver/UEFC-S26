@@ -100,8 +100,12 @@ x_cg_empty = np.dot(component_locations, component_masses)/m_empty # Meters
 x_cg_empty_frac = x_cg_empty/c_bar
 print(f"SM.6 | x_cg_empty = {x_cg_empty} Meters")
 print(f"SM.6 | x_cg_empty_frac = {x_cg_empty_frac}")
-# x_{cg}^{c_bar} is 0.44105, based on Figure SM.5d,
-# the plane WILL FLY TRIMMED WHEN EMPTY around a_e^{trim} = -1.225 - Ricardo
+
+# Identify alpha_e_empty
+alpha_e_empty = elevator_range_eff[np.argmin(abs(
+    get_x_cg_frac(elevator_range_eff) - x_cg_empty_frac))] # Radians
+
+print(f"SM.6 | alpha_e_empty = {(180/np.pi)*alpha_e_empty} Degrees") # Degrees
 
 
 # SM.7 Code - Ricardo Ochoa
