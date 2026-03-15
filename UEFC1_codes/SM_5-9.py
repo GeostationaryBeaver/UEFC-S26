@@ -4,7 +4,7 @@ from GetUEFC import UEFC
 
 # SM.5(b) Code - Ricardo Ochoa
 # Effective Elevator Range
-elevator_range_eff = np.linspace(-10*(np.pi/180), 10*(np.pi/180), 200) # Radians
+elevator_range_eff = np.linspace(-10*(np.pi/180), 10*(np.pi/180), 1000) # Radians
 
 # Plane Vanilla Constants from Page 4
 S = 0.354 # Meters
@@ -74,7 +74,8 @@ C_MW = C_MW_nom # Equation 17
 def get_x_cg_frac(alpha_e):
     C_LH = get_C_LH(alpha_e)
     C_LW = get_C_LW(alpha_e)
-    x_cg_frac = 1/4 + (V_h*C_LH - C_MW) / (C_LW + c_bar*V_h*C_LH/l_h) # SM.1 Result when not Nominal
+    x_cg_frac = 1/4 + (V_h*C_LH - C_MW) / (C_LW + c_bar*V_h*C_LH/l_h) # The SM.1
+    # Result when not Nominal
     return x_cg_frac
 
 plt.figure(3)
@@ -88,19 +89,16 @@ plt.grid()
 
 # SM.6 Code - Ricardo Ochoa
 
-locations = [-0.16, 0.05, 0.20, 0.00, -0.13,
+component_locations = [-0.16, 0.05, 0.20, 0.00, -0.13,
              0.28, 0.45, 0.03, 0.07, 0.75] # Meters
-masses = [75, 75, 15, 8, 12,
+component_masses = [75, 75, 15, 8, 12,
           36, 24, 90, 25, 20] # Grams
 
-m_empty = np.sum(masses)
+m_empty = np.sum(component_masses)
 
-x_cg_empty = np.dot(locations, masses)/m_empty # Meters
-print(f"SM.6 | x_cg_empty = {x_cg_empty}")
-
-c_bar = 0.2 # Meter
-
+x_cg_empty = np.dot(component_locations, component_masses)/m_empty # Meters
 x_cg_empty_frac = x_cg_empty/c_bar
+print(f"SM.6 | x_cg_empty = {x_cg_empty} Meters")
 print(f"SM.6 | x_cg_empty_frac = {x_cg_empty_frac}")
 # x_{cg}^{c_bar} is 0.44105, based on Figure SM.5d,
 # the plane WILL FLY TRIMMED WHEN EMPTY around a_e^{trim} = -1.225 - Ricardo
@@ -118,23 +116,24 @@ def get_x_pay(alpha_e):
 x_nom_pay = get_x_pay(alpha_e=0) # alpha_e = 0 at Nominal Condition:
 x_nom_pay_frac = x_nom_pay / c_bar
 
-print(f"SM.7 | x_nom_pay: {x_nom_pay}")
+print(f"SM.7 | x_nom_pay: {x_nom_pay} Meters")
 print(f"SM.7 | x_nom_frac: {x_nom_pay_frac}")
 
 
 # SM.8 Code - Ricardo Ochoa
 
-def delta_x_cg_frac(alpha_e):
-    return get_x_cg_frac(alpha_e) - get_x_cg_frac(alpha_e=0) # alpha_e = 0 at Nominal Condition:
+def get_delta_x_cg_frac(alpha_e):
+    return get_x_cg_frac(alpha_e) - get_x_cg_frac(alpha_e=0) # alpha_e = 0 at
+    # the Nominal Condition:
 
-def delta_x_pay_frac(alpha_e):
+def get_delta_x_pay_frac(alpha_e):
     x_pay_frac = get_x_pay(alpha_e) / c_bar
     return x_pay_frac - x_nom_pay_frac
 
 plt.figure(4)
-plt.plot((180/(np.pi))*elevator_range_eff, delta_x_cg_frac(elevator_range_eff),
+plt.plot((180/(np.pi))*elevator_range_eff, get_delta_x_cg_frac(elevator_range_eff),
         color="Violet", label=r"$\Delta x_{cg}/\bar{c}$")
-plt.plot((180/(np.pi))*elevator_range_eff, delta_x_pay_frac(elevator_range_eff),
+plt.plot((180/(np.pi))*elevator_range_eff, get_delta_x_pay_frac(elevator_range_eff),
         color="Green", label=r"$\Delta x_{pay}/\bar{c}$")
 plt.title(r"$\Delta x_{pay}/\bar{c}$ vs. $\alpha_e^{trim}$")
 plt.xlabel(r"$\alpha_e^{trim}$ (degrees)")
@@ -150,12 +149,22 @@ def get_SM(alpha_e):
     SM = x_np_frac - x_cg_frac
     return SM
 
+SM = get_SM(elevator_range_eff)
+
 plt.figure(5)
-plt.plot((180/(np.pi))*elevator_range_eff, get_SM(elevator_range_eff),
+plt.plot((180/(np.pi))*elevator_range_eff, SM,
         color="Brown")
 plt.title(r"$SM$ vs. $\alpha_e^{trim}$")
 plt.xlabel(r"$\alpha_e^{trim}$ (degrees)")
 plt.ylabel(r"$SM$")
 plt.grid()
+
+# Identify alpha_a_neutral
+alpha_e_neutral = elevator_range_eff[np.argmin(abs(SM))] # Radians
+
+print(f"SM.9 | SM at Nominal Conditions: {get_SM(alpha_e=0)}")
+print(f"SM.9 | alpha_e_neutral: {(180/np.pi)*alpha_e_neutral} Degrees")
+delta_pay_neutral = c_bar*get_delta_x_pay_frac(alpha_e=alpha_e_neutral)
+print(f"SM.9 | delta_pay: {delta_pay_neutral} Meters") # Meters
 
 plt.show() # Displays all the 5 Figures
