@@ -37,14 +37,19 @@ def cl_difference(CL_test):
     return np.max(cl_dist) - 0.8
 
 
+# Find overall CL that perfectly matches max local cl = 0.8
 max_allowed_CL = fsolve(cl_difference, 0.6)[0]
 print(f"To satisfy Constraints 6 & 12 (max c_l <= 0.8):")
 print(f"The maximum allowable aircraft C_L is: {max_allowed_CL:.3f}\n")
 
-
 # =============================================================================
 # 3. HELPER FUNCTIONS & MATH CONFLICT CHECK
 # =============================================================================
+# Set this to your exact Trim CL (Constraint 1: W = L, alpha_e = 0)
+# (Setting to 0.5 here so the B >= 5 constraint is mathematically possible)
+CL_trim = 0.50
+
+
 def calc_Vh(l_h):
     return (S_h * l_h) / (S * c_bar)
 
@@ -62,18 +67,26 @@ def calc_SM(l_h, AR_h, x_cg_frac):
 
 def calc_B(l_v):
     """
-    Standard Blaine Rawdon Spiral Stability formula: B = V_v * Dihedral(deg)
-    Update this formula if your professor defines B differently!
+    Updated Spiral Stability formula based on user input:
+    B = (l_v / b) * (dihedral / CL)
     """
-    return calc_Vv(l_v) * dihedral
+    return (l_v / b) * (dihedral / CL_trim)
 
 
 print("--- Pre-Optimization Math Check ---")
-max_possible_B = 0.05 * dihedral  # Since max V_v is 0.05
-print(f"With V_v capped at 0.05 (Constraint 9) and Dihedral = {dihedral} deg,")
-print(f"The mathematical maximum for Spiral Stability (B) is {max_possible_B:.2f}.")
+# If V_v <= 0.05, we can calculate the absolute maximum physical length of l_v
+max_lv_from_Vv = (0.05 * S * b) / S_v
+max_possible_B = calc_B(max_lv_from_Vv)
+
+print(f"With V_v capped at 0.05 (Constraint 9) and Trim C_L = {CL_trim},")
+print(f"The longest allowed vertical boom is {max_lv_from_Vv:.3f} m.")
+print(f"At this length, the mathematical maximum for Spiral Stability (B) is {max_possible_B:.2f}.")
+
 if max_possible_B < 5.0:
-    print(">>> WARNING: Constraint 9 (V_v <= 0.05) and Constraint 10 (B >= 5) physically contradict each other! <<<\n")
+    print(
+        ">>> WARNING: Your chosen CL_trim makes Constraint 9 (V_v <= 0.05) and Constraint 10 (B >= 5) physically contradict each other! <<<\n")
+else:
+    print(">>> Check passed: A solution exists that satisfies all constraints! <<<\n")
 
 
 # =============================================================================
@@ -82,7 +95,7 @@ if max_possible_B < 5.0:
 # Design Vector x = [l_h, l_v, AR_h, AR_v, x_cg_frac]
 
 def objective(x):
-    # Minimize tail boom lengths (lightest possible weight)
+    # Minimize tail boom lengths (lightest possible weight for high density foam/balsa)
     return x[0] ** 2 + x[1] ** 2
 
 
@@ -90,7 +103,7 @@ constraints = [
     {'type': 'ineq', 'fun': lambda x: calc_Vh(x[0]) - 0.30},  # V_h >= 0.30
     {'type': 'ineq', 'fun': lambda x: 0.60 - calc_Vh(x[0])},  # V_h <= 0.60
     {'type': 'ineq', 'fun': lambda x: calc_Vv(x[1]) - 0.02},  # V_v >= 0.02
-    #{'type': 'ineq', 'fun': lambda x: 0.05 - calc_Vv(x[1])},  # V_v <= 0.05
+    {'type': 'ineq', 'fun': lambda x: 0.05 - calc_Vv(x[1])},  # V_v <= 0.05
     {'type': 'ineq', 'fun': lambda x: calc_SM(x[0], x[2], x[4])},  # SM >= 0 (x_np > x_cg)
     {'type': 'ineq', 'fun': lambda x: 0.20 - calc_SM(x[0], x[2], x[4])},  # SM <= 0.20
     {'type': 'ineq', 'fun': lambda x: calc_B(x[1]) - 5.0}  # B >= 5 (Spiral Stability)
@@ -99,10 +112,10 @@ constraints = [
 # Bounds [l_h, l_v, AR_h, AR_v, x_cg_frac]
 bounds = (
     (0.1, 1.5),  # l_h bounds
-    (0.1, 4.0),  # l_v bounds (widened heavily just in case B takes precedence)
+    (0.1, 1.5),  # l_v bounds
     (3.0, 6.0),  # AR_h
     (1.5, 4.0),  # AR_v
-    (0.1, 0.4)  # x_cg_frac
+    (0.1, 0.4)  # x_cg_frac bounds
 )
 
 x0 = [0.4, 0.4, 4.0, 2.0, 0.25]
@@ -138,5 +151,4 @@ else:
     print("Reason from Solver:", result.message)
     print("\nDiagnostic:")
     print("The solver could not find a geometry that obeys all rules at the same time.")
-    print("Try temporarily commenting out either the V_v <= 0.05 constraint or the B >= 5 constraint")
-    print("to see which variable is causing the mathematical conflict in your model parameters.")
+    print("Check the Pre-Optimization Math Check above. You likely need to change CL_trim.")
