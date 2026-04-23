@@ -89,10 +89,10 @@ plt.grid()
 
 # SM.6 Code - Ricardo Ochoa
 
-component_locations = [-0.16, 0.05, 0.20, 0.00, -0.13,
-             0.28, 0.45, 0.03, 0.07, 0.75] # Meters
-component_masses = [75, 75, 15, 8, 12,
-          36, 24, 90, 25, 20] # Grams
+component_locations = [.243, -.0627, 0.081, 0.081, -0.0627,
+             0.29, .444, 0.0405, 0.081, 0.645] # Meters
+component_masses = [16.6, 80.9, 132.8, 9.1, 13.3,
+          29.91, 18.45, 90, 7.356, 14] # Grams
 
 m_empty = np.sum(component_masses)
 
