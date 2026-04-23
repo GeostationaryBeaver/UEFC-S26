@@ -7,19 +7,19 @@ from GetUEFC import UEFC
 elevator_range_eff = np.linspace(-10*(np.pi/180), 10*(np.pi/180), 1000) # Radians
 
 # Plane Vanilla Constants from Page 4
-S = 0.161 # Meters
-AR = 8.2
+S = 0.217 # Meters
+AR = 8.27
 S_h = UEFC().Sh
 
 # Plane Vanilla Constants from Page 10
-c_bar = 0.2 # Meters
-b = 1.153 # Meters
+c_bar = 0.162 # Meters
+b = 1.340 # Meters
 C_LW_nom = 0.65
 C_MW_nom = -0.13
 c_bar_h = 0.0775 # Meters
-b_h = 0.2575 # Meters
+b_h = 0.26 # Meters
 f_e = 0.6
-l_h = 0.65 # Meters
+l_h = 0.547 # Meters
 m_pay = 250 # Grams
 
 # Derived Quantities from Constants
