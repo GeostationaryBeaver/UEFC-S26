@@ -167,10 +167,10 @@ if __name__ == "__main__":
     aircraft.mpay_g   = 250    # payload weight in grams
 
     # Geometry parameters
-    S  = np.nan                  # Wing area (m^2)
-    AR = np.nan                  # Wing aspect ratio
+    S  = 0.217                  # Wing area (m^2)
+    AR = 8.27                # Wing aspect ratio
     aircraft.taper    = 0.5  # taper ratio
-    aircraft.dihedral = 10   # Wing dihedral (degrees)
+    aircraft.dihedral = 12.2 # Wing dihedral (degrees)
     aircraft.tau      = 0.12   # thickness-to-chord ratio
 
     # Tail parameters
@@ -178,23 +178,25 @@ if __name__ == "__main__":
     aircraft.Sv = 0.03 # Wing area of vertical tail (m^2)
 
     # Fuselage parameters
-    aircraft.l_AR = 1.9  # Fuselage wingspan to length ratio (-)
+    aircraft.l_AR = 1.63  # Fuselage wingspan to length ratio (-)
 
     # Aerodynamic parameters
-    aircraft.CLdes    = 0.8    # maximum CL wing will be designed to fly at (in cruise)
+    aircraft.CLdes    = 0.65    # maximum CL wing will be designed to fly at (in cruise)
     aircraft.e0       = 0.95  # Span efficiency for straight level flight
 
     # Wing bending and material properties
-    aircraft.dbmax    = 0.1  # tip displacement bending constraint
-    aircraft.rhofoam  = 32.     # kg/m^3. high load foam
+    aircraft.dbmax    = 0.08  # tip displacement bending constraint
+    aircraft.rhofoam  = 25.2     # kg/m^3. high load foam
     aircraft.Efoam    = 19.3E6  # Pa.     high load foam
 
     num_division = 41
     scan_ARS(
     aircraft,
-    AR_start = 6,
-    AR_end   = 16,
-    S_start  = 0.15,
-    S_end    = 0.60,
-    num_division = num_division,
-    show_plots = True)
+    AR_start=6,
+    AR_end=16,
+    S_start=0.150,
+    S_end=0.6,
+    num_division= num_division,
+    show_plots=True
+)
+
